@@ -7,13 +7,14 @@
   <meta name="description" content="Registra tus ingresos diarios en un hermoso calendario." />
   <meta name="theme-color" content="#c79b6d" />
 
-  <!-- PWA: rutas absolutas para GitHub Pages -->
+  <!-- PWA -->
   <link rel="manifest" href="/dinero05/manifest.json" />
   <link rel="apple-touch-icon" href="/dinero05/icon-192.png" />
 
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Quicksand:wght@500;600&display=swap"
     rel="stylesheet"
@@ -21,16 +22,11 @@
 
   <style>
     * {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
       box-sizing: border-box;
     }
 
-    *::-webkit-scrollbar {
-      display: none;
-    }
+    *::-webkit-scrollbar { display: none; }
 
     body {
       font-family: 'Quicksand', sans-serif;
@@ -43,18 +39,36 @@
       flex-direction: column;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+    header { text-align: center; margin-bottom: 20px; }
 
     h1 {
       font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
       font-size: 2.4rem;
-      letter-spacing: 1px;
       margin-bottom: 6px;
+    }
+
+    /* Nueva fila para navegación */
+    .nav-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .nav-btn {
+      background: #c79b6d;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 1rem;
+      color: white;
       cursor: pointer;
+      font-weight: 600;
+    }
+
+    .nav-btn:active {
+      transform: scale(0.95);
     }
 
     .total-box {
@@ -64,11 +78,8 @@
       text-align: center;
       margin: 0 auto 24px;
       max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
       font-size: 1.3rem;
       font-weight: 600;
-      color: #2e251b;
-      transition: all 0.3s ease;
     }
 
     .calendar {
@@ -83,9 +94,7 @@
     .day-header {
       text-align: center;
       font-weight: 600;
-      font-size: 0.9rem;
       color: #8a7f6a;
-      padding: 6px 0;
     }
 
     .day-cell {
@@ -96,56 +105,30 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      padding: 6px;
-      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       cursor: pointer;
+      transition: 0.2s;
     }
 
     .day-cell.editable:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.09);
     }
 
-    .day-cell.locked {
-      opacity: 0.85;
-      cursor: default;
-    }
+    .day-number { font-weight: 600; }
+    .day-value { font-size: 0.85rem; }
 
-    .day-number {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 3px;
-    }
-
-    .day-value {
-      font-size: 0.85rem;
-      color: #5d5447;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 85%;
-      line-height: 1.2;
-    }
-
-    .empty-cell {
-      visibility: hidden;
-    }
+    .empty-cell { visibility: hidden; }
 
     .modal-overlay {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
       backdrop-filter: blur(4px);
-      z-index: 2000;
       justify-content: center;
       align-items: center;
+      z-index: 2000;
     }
 
     .modal-content {
@@ -154,72 +137,16 @@
       border-radius: 20px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
       text-align: center;
-      font-family: 'Quicksand', sans-serif;
-    }
-
-    .modal-content h2 {
-      margin-bottom: 20px;
-      font-size: 1.5rem;
-      color: #3a3226;
-    }
-
-    #monto-input {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #e0d8cd;
-      border-radius: 12px;
-      font-size: 1.2rem;
-      text-align: center;
-      font-family: 'Quicksand', sans-serif;
-      background: white;
-      outline: none;
-      margin-top: 10px;
-    }
-
-    .modal-buttons {
-      margin-top: 24px;
-      display: flex;
-      gap: 12px;
-      justify-content: center;
     }
 
     .modal-btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 600;
-      cursor: pointer;
+      padding: 10px;
       flex: 1;
-      transition: all 0.2s;
-    }
-
-    .btn-cancel {
-      background: #e8e2db;
-      color: #5d5447;
-    }
-
-    .btn-confirm {
-      background: #c79b6d;
-      color: white;
-    }
-
-    #delete-confirm {
-      background: #d32f2f;
-    }
-
-    #delete-confirm:hover {
-      background: #b71c1c;
-    }
-
-    .btn-cancel:hover {
-      background: #d8d0c7;
-    }
-
-    .btn-confirm:hover {
-      background: #b58a5c;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
     }
 
     .feedback {
@@ -233,36 +160,28 @@
       border-radius: 12px;
       font-weight: 600;
       opacity: 0;
-      transition: transform 0.4s, opacity 0.4s;
-      z-index: 3000;
+      transition: 0.4s;
     }
 
     .feedback.show {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2.1rem;
-      }
-      .day-cell {
-        height: 64px;
-      }
-      .day-number {
-        font-size: 1.05rem;
-      }
-    }
   </style>
 </head>
 <body>
+
   <header>
-    <h1 id="month-title">Noviembre 2025</h1>
+    <h1 id="month-title"></h1>
+
+    <!-- Navegación entre meses -->
+    <div class="nav-row">
+      <button class="nav-btn" id="prev-month">←</button>
+      <button class="nav-btn" id="next-month">→</button>
+    </div>
   </header>
 
-  <div class="total-box">
-    Total acumulado: $0
-  </div>
+  <div class="total-box">Total acumulado: $0</div>
 
   <div class="calendar" id="calendar">
     <div class="day-header">Dom</div>
@@ -274,28 +193,25 @@
     <div class="day-header">Sáb</div>
   </div>
 
-  <!-- Modal: Ingresar monto -->
+  <!-- Modal ingresar -->
   <div class="modal-overlay" id="input-modal">
     <div class="modal-content">
       <h2>Ingresa valor para el día <span id="modal-day"></span></h2>
-      <input type="number" id="monto-input" placeholder="$15.000" min="0" step="1000" />
-      <div class="modal-buttons">
-        <button class="modal-btn btn-cancel" id="cancelar-btn">Cancelar</button>
-        <button class="modal-btn btn-confirm" id="aceptar-btn">Aceptar</button>
+      <input type="number" id="monto-input" min="0" step="500" />
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="modal-btn" id="cancelar-btn">Cancelar</button>
+        <button class="modal-btn" id="aceptar-btn" style="background:#c79b6d; color:white;">Aceptar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Confirmar borrado -->
+  <!-- Modal borrar -->
   <div class="modal-overlay" id="confirm-delete-modal">
     <div class="modal-content">
       <h2>¿Borrar todos los registros?</h2>
-      <p style="font-size:1rem; color:#5d5447; margin-bottom:20px;">
-        Esta acción no se puede deshacer.
-      </p>
-      <div class="modal-buttons">
-        <button class="modal-btn btn-cancel" id="delete-cancel">Cancelar</button>
-        <button class="modal-btn btn-confirm" id="delete-confirm">Borrar</button>
+      <div style="display:flex; gap:12px;">
+        <button class="modal-btn" id="delete-cancel">Cancelar</button>
+        <button class="modal-btn" id="delete-confirm" style="background:#d32f2f; color:white;">Borrar</button>
       </div>
     </div>
   </div>
@@ -303,8 +219,13 @@
   <div class="feedback" id="feedback">✓ Guardado</div>
 
   <script>
-    const YEAR = 2025;
-    const MONTH = 10;
+    /* ===========================
+        ✔ MES AUTOMÁTICO
+       =========================== */
+    let currentDate = new Date(); // ← ahora el mes actual
+    let YEAR = currentDate.getFullYear();
+    let MONTH = currentDate.getMonth();
+
     const MONTH_NAMES = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -312,163 +233,136 @@
 
     const calendarEl = document.getElementById('calendar');
     const totalBox = document.querySelector('.total-box');
+    const monthTitle = document.getElementById('month-title');
+
+    const prevBtn = document.getElementById('prev-month');
+    const nextBtn = document.getElementById('next-month');
+
     const inputModal = document.getElementById('input-modal');
-    const confirmDeleteModal = document.getElementById('confirm-delete-modal');
-    const modalDaySpan = document.getElementById('modal-day');
     const montoInput = document.getElementById('monto-input');
     const aceptarBtn = document.getElementById('aceptar-btn');
     const cancelarBtn = document.getElementById('cancelar-btn');
-    const deleteCancelBtn = document.getElementById('delete-cancel');
-    const deleteConfirmBtn = document.getElementById('delete-confirm');
+    const modalDaySpan = document.getElementById('modal-day');
+
     const feedbackEl = document.getElementById('feedback');
-    const monthTitle = document.getElementById('month-title');
 
     let currentDay = null;
     let records = JSON.parse(localStorage.getItem('almanaqueFinanciero')) || {};
 
     function formatDisplayValue(value) {
-      if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-      if (value >= 1_000) return (value / 1_000).toFixed(0) + 'K';
-      return '$' + value.toLocaleString('es-CO');
+      if (value >= 1_000_000) return (value/1_000_000).toFixed(1)+'M';
+      if (value >= 1_000) return (value/1000).toFixed(0)+'K';
+      return '$'+value.toLocaleString('es-CO');
     }
 
-    let clickCount = 0;
-    let clickTimer = null;
-    monthTitle.addEventListener('click', () => {
-      clickCount++;
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => clickCount = 0, 1500);
-      } else if (clickCount >= 5) {
-        clearTimeout(clickTimer);
-        confirmDeleteModal.style.display = 'flex';
-        clickCount = 0;
-      }
+    /* ===========================
+          NAVEGACIÓN ENTRE MESES
+       =========================== */
+    prevBtn.addEventListener('click', () => {
+      MONTH--;
+      if (MONTH < 0) { MONTH = 11; YEAR--; }
+      renderCalendar();
     });
 
-    function init() {
-      monthTitle.textContent = `${MONTH_NAMES[MONTH]} ${YEAR}`;
+    nextBtn.addEventListener('click', () => {
+      MONTH++;
+      if (MONTH > 11) { MONTH = 0; YEAR++; }
       renderCalendar();
-      updateTotal();
-    }
+    });
 
+    /* ===========================
+             RENDERIZAR
+       =========================== */
     function renderCalendar() {
-      while (calendarEl.children.length > 7) {
+      monthTitle.textContent = `${MONTH_NAMES[MONTH]} ${YEAR}`;
+
+      while (calendarEl.children.length > 7)
         calendarEl.removeChild(calendarEl.lastChild);
-      }
 
       const firstDay = new Date(YEAR, MONTH, 1).getDay();
-      const daysInMonth = new Date(YEAR, MONTH + 1, 0).getDate();
+      const daysInMonth = new Date(YEAR, MONTH+1, 0).getDate();
 
-      for (let i = 0; i < firstDay; i++) {
+      for (let i=0;i<firstDay;i++) {
         const empty = document.createElement('div');
         empty.className = 'empty-cell';
         calendarEl.appendChild(empty);
       }
 
-      for (let day = 1; day <= daysInMonth; day++) {
+      for (let day=1;day<=daysInMonth;day++) {
         const key = `${YEAR}-${MONTH}-${day}`;
         const dayCell = document.createElement('div');
-        dayCell.className = records[key] !== undefined ? 'day-cell locked' : 'day-cell editable';
-        dayCell.dataset.day = day;
+        dayCell.className = records[key] !== undefined ? 'day-cell' : 'day-cell editable';
 
-        const dayNumber = document.createElement('div');
-        dayNumber.className = 'day-number';
-        dayNumber.textContent = day;
+        const dn = document.createElement('div');
+        dn.className = 'day-number';
+        dn.textContent = day;
 
-        const dayValue = document.createElement('div');
-        dayValue.className = 'day-value';
-        if (records[key] !== undefined) {
-          dayValue.textContent = formatDisplayValue(records[key]);
-        }
-
-        dayCell.appendChild(dayNumber);
-        dayCell.appendChild(dayValue);
+        const dv = document.createElement('div');
+        dv.className = 'day-value';
+        if (records[key] !== undefined) dv.textContent = formatDisplayValue(records[key]);
 
         if (records[key] === undefined) {
-          dayCell.addEventListener('click', () => openInputModal(day));
+          dayCell.addEventListener('click', () => openModal(day));
         }
 
+        dayCell.appendChild(dn);
+        dayCell.appendChild(dv);
         calendarEl.appendChild(dayCell);
       }
+
+      updateTotal();
     }
 
-    function openInputModal(day) {
+    function openModal(day) {
       currentDay = day;
       modalDaySpan.textContent = day;
       montoInput.value = '';
-      montoInput.focus();
       inputModal.style.display = 'flex';
     }
 
     function saveValue() {
       const raw = montoInput.value.trim();
-      if (!raw) {
-        closeInputModal();
-        return;
-      }
+      if (!raw) return closeModal();
+
       const value = parseInt(raw);
-      if (isNaN(value) || value < 0) {
-        showFeedback('Valor inválido', '#d32f2f');
-        return;
-      }
+      if (isNaN(value) || value < 0) return;
 
       const key = `${YEAR}-${MONTH}-${currentDay}`;
       records[key] = value;
       localStorage.setItem('almanaqueFinanciero', JSON.stringify(records));
 
       renderCalendar();
-      updateTotal();
-      closeInputModal();
+      closeModal();
       showFeedback('✓ Guardado');
     }
 
-    function closeInputModal() {
+    function closeModal() {
       inputModal.style.display = 'none';
-      currentDay = null;
-    }
-
-    function confirmDelete() {
-      confirmDeleteModal.style.display = 'none';
-      records = {};
-      localStorage.removeItem('almanaqueFinanciero');
-      renderCalendar();
-      updateTotal();
-      showFeedback('✓ Registros borrados');
     }
 
     function updateTotal() {
-      const total = Object.values(records).reduce((sum, val) => sum + val, 0);
+      const total = Object.values(records).reduce((a,b)=>a+b,0);
       totalBox.textContent = `Total acumulado: $${total.toLocaleString('es-CO')}`;
     }
 
-    function showFeedback(text, bgColor = 'rgba(199, 155, 109, 0.9)') {
-      feedbackEl.textContent = text;
-      feedbackEl.style.background = bgColor;
+    function showFeedback(msg) {
+      feedbackEl.textContent = msg;
       feedbackEl.classList.add('show');
-      setTimeout(() => feedbackEl.classList.remove('show'), 2000);
+      setTimeout(()=>feedbackEl.classList.remove('show'),2000);
     }
 
     aceptarBtn.addEventListener('click', saveValue);
-    cancelarBtn.addEventListener('click', closeInputModal);
-    inputModal.addEventListener('click', e => e.target === inputModal && closeInputModal());
-
-    deleteCancelBtn.addEventListener('click', () => confirmDeleteModal.style.display = 'none');
-    deleteConfirmBtn.addEventListener('click', confirmDelete);
-    confirmDeleteModal.addEventListener('click', e => e.target === confirmDeleteModal && (confirmDeleteModal.style.display = 'none'));
-
+    cancelarBtn.addEventListener('click', closeModal);
     montoInput.addEventListener('keypress', e => e.key === 'Enter' && saveValue());
+    inputModal.addEventListener('click', e => e.target===inputModal && closeModal());
 
-    init();
+    renderCalendar();
   </script>
 
-  <!-- ✅ Registro CORRECTO del Service Worker para /dinero05/ -->
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/dinero05/service-worker.js', { scope: '/dinero05/' })
-          .then(reg => console.log('SW registrado con scope:', reg.scope))
-          .catch(err => console.warn('Error al registrar SW:', err));
-      });
+      navigator.serviceWorker.register('/dinero05/service-worker.js', { scope:'/dinero05/' });
     }
   </script>
 </body>
